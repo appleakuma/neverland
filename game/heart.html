@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .love{
+            text-align: center;
+            color: #ffffff;
+            margin: 30px;
+            position: relative;
+            top: 100px;
+            min-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .search{
+            position: relative;
+            top: 100px;
+            text-align: center;
+            min-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body style="background-color: black;margin: 0%;">
+    <div class="love">
+    OOOOO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OOOOO<br>
+  OOOOOOOOOO&nbsp;&nbsp;&nbsp;&nbsp;OOOOOOOOOO<br>
+ OOOOOOOOOOOO&nbsp;&nbsp;OOOOOOOOOOOO<br>
+OOOOOOOOOOOOOOOOOOOOOOOOOOO<br>
+OOOOOOOOOOOOOOOOOOOOOOOOOOO<br>
+OOOOOOOOOOOOOOOOOOOOOOOOOOO<br>
+ OOOOOOOOOOOOOOOOOOOOOOOOO<br>
+   OOOOOOOOOOOOOOOOOOOOO<br>
+     OOOOOOOOOOOOOOOOO<br>
+       OOOOOOOOOOOOO<br>
+         OOOOOOOOO<br>
+           OOOOO<br>
+             O
+    </div>
+
+    <div class="search">
+    <input type="text" id="pageName" placeholder="PASSWORD">
+    <button onclick="openPage()">GO</button>
+    
+    <script>
+    function openPage() {
+        const pageName = document.getElementById('pageName').value;
+        if (pageName === "mhh") {
+            window.open("mhh.html", "_blank");
+        }else if(pageName === "涅瓦市"){
+            window.open("neversista_find.html","_blank");
+        }else{
+            window.open("blank.html","_blank");
+        }
+    }
+    </script>
+    </div>
+</body>
+</html>

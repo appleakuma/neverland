@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dog</title>
+    <style>
+        /* 让body铺满全屏，没有任何多余元素 */
+        body {
+            background-image: url('image/dog4.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            min-height: 100vh;
+            cursor: pointer;       /* 手指光标，暗示可点击 */
+        }
+    </style>
+</head>
+<body>
+<script>
+    (function() {
+        // === 你要跳转的下一个页面 ===
+        const url = 'next1.html';   // 改成你的目标地址
+        
+        // 点击任意位置跳转 (只触发一次)
+        document.addEventListener('click', function fn() {
+            document.removeEventListener('click', fn, true);  // 确保只跳一次
+            window.location.href = url;  // 当前页面跳转
+        }, true);  // 捕获阶段，确保任何点击都能捕获
+    })();
+</script>
+</body>
+</html>

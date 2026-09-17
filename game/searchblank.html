@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索引擎</title>
+</head>
+<body style="background-color: rgb(223, 135, 153);">
+
+    <div style="text-align: center;position: relative;top: 35vh">
+    <input style="border-radius: 10px;border: #808080df solid ;width: 300px;height: 30px;" type="text" id="pageName" placeholder="请输入关键词">
+    <button style="margin: 10px;width: 60px;height: 30px;border-radius: 20px;border: 1px solid #696969df;" onclick="openPage()">搜索</button>
+    </div>
+    <script>
+    function openPage() {
+        const pageName = document.getElementById('pageName').value;
+        if(pageName.includes("图书室")){
+                window.open("https://ja.wikipedia.org/wiki/%E5%9B%B3%E6%9B%B8%E5%AE%A4%E3%81%AE%E3%83%8D%E3%83%B4%E3%82%A1%E3%82%B8%E3%82%B9%E3%82%BF","_blank")
+        }
+        if(pageName.includes("久保谷") || pageName.includes("Mackylove")|| pageName.includes("mackylove")|| pageName.includes("April")|| pageName.includes("april")){
+                window.open("jbg.html","_blank")
+        }
+        if(pageName.includes("茅") || pageName.includes("kapikapi")|| pageName.includes("K")){
+                window.open("kaya.html","_blank")
+        }
+        if(pageName.includes("和泉") || pageName.includes("giraffe")|| pageName.includes("ghost")){
+                window.open("hqx.html","_blank")
+        }
+        if(pageName.includes("白峰") || pageName.includes("cait")|| pageName.includes("sith")){
+                window.open("bfcr.html","_blank")
+        }
+        if(pageName.includes("炼") || pageName.includes("renji")|| pageName.includes("milk")||pageName.includes("MILK")){
+                window.open("sclc.html","_blank")
+        }
+        if (pageName.includes("槙原涉") || pageName.includes("麦基劳")|| pageName.includes("Neversista")|| pageName.includes("neversista")) {
+            window.open("workpass.html", "_blank");
+        }else{
+            window.open("searchblank.html","_self");
+        }
+
+    }
+    </script>
+    <div style="padding: 20px;border-radius: 10px;background-color: white;max-width: 800px;margin-top: 20px;text-align: center;margin-left: auto;margin-right: auto;">
+        <p style="font-size: 18px; font-weight: 600; color: rgb(223, 135, 153);">好像没有搜索到事件相关的信息…</p>
+        
+    </div>
+    <div style="padding-top: 20px;padding-bottom: 20px;border-radius: 10px;background-color: white;max-width: 500px;margin-top:20vh;text-align: center;margin-left: auto;margin-right: auto;">
+        <h2>精彩尽在 北斗周刊<br><a href="news2.html">点击即看2017最新报道</a></h2>
+        
+    </div>
+        <div style="border-radius: 10px;background-color: white;max-width: 500px;margin-top: 30px;text-align: center;margin-left: auto;margin-right: auto;">
+        <p style="padding-top: 20px;padding-bottom: 20px;"><a href="computer1.html" style="text-decoration: none;color: rgb(223, 135, 153);">返回桌面</a></p>
+        
+    </div>
+</body>
+</html>

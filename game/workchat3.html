@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内部聊天室</title>
+    <style>
+    .a{
+        background-color: white;
+        border: 1px solid #ffffff;
+    }
+    .b{
+        height: 50px;
+        padding: 10px;
+        padding-top: 20px;
+        font-size: 18px;
+        color: rgb(61, 61, 61);
+        
+        background-color: #93c0e0;
+    }
+    .b:hover{
+        background-color: #096db0;
+        color: #93c0e0;
+    }
+    .name{
+        color: #443a3a;
+        font-size: 16px;
+        margin: 5px;
+        margin-top: 10px;
+        font-weight: 400;
+    }
+    .talk{
+        color: #ffffff;
+        font-size: 18px;
+        background-color: rgb(61, 61, 61);
+        display: inline-block;
+        max-width: 70vw;
+        margin-left: 10px;
+        margin-right: auto;
+        margin-bottom: 5px;
+        border-radius: 8px;
+        font-weight: 300;
+        padding: 8px;
+        padding-bottom: 10px;
+        text-align: left;
+    }
+    .say{
+        color: #ffffff;
+        font-size: 18px;
+        display: inline-block;
+        max-width: 35vw;
+        margin-bottom: 5px;
+        border-radius: 8px;
+        font-weight: 300;
+        padding: 8px;
+        padding-bottom: 10px;
+        background-color: #096db0;
+        margin-left: auto;
+        margin-top: 10px;
+        text-align: left;
+    }
+
+    .chat-container {
+        flex: 3;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        height: 95vh; /* 固定高度 */
+        overflow: hidden; /* 隐藏外部滚动 */
+    }
+
+    .message-list {
+        flex: 1;
+        overflow-y: auto; /* 内部垂直滚动 */
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .timestamp {
+        text-align: center;
+        color: #999;
+        font-size: 14px;
+        margin: 15px 0 5px;
+    }
+    </style>
+</head>
+<body style="margin: 0px;background-color: #93c0e0">
+
+<div style="display: flex;
+height: 100vh;
+gap: 0px;
+">
+<div class="a" style="flex:1; display: flex;flex-direction: column;">
+    <div style="margin: 10px;font-size: 20px;font-weight: 500;">工作台</div><br><br>
+    <a  style="text-decoration: none;"><div class="b" style="flex: 1; ">重大项目管理</div></a>
+    <a  style="text-decoration: none;"><div class="b" style="flex: 1; background-color: #096db0;color: #93c0e0;">内部聊天室</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1; ">旗下职员管理</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1; ">会议与日程</div></a>
+    <br><br><br><br><br><br>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1; background-color: #ffffff;color: #096db0;">返回</div></a>
+    
+</div>
+
+<div class="a" style="flex:1; display: flex;flex-direction: column;">
+    <div style="margin: 10px;font-size: 20px;font-weight: 500;">内部聊天室</div><br><br>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;">古川 铁平</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;background-color: #096db0;color: #93c0e0;">鸟沢 唯</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;">久保谷 瞠</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;">小鸟游 纺</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;">Nero·Turner</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;">都志见 文太</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;">铃村 飒太</div></a>
+</div>
+
+<div class="chat-container">
+    <div style="margin: 10px;font-size: 20px;font-weight: 500; padding-bottom: 10px; ">鸟沢 唯</div>
+    <div class="message-list">
+        <div class="timestamp">2016年12月24日 21:15</div>
+        <div class="say">圣诞节你有空吗？</div>
+        <div class="talk">健身中，勿扰</div>
+        <div class="timestamp">2016年12月31日 19:09</div>
+        <div class="say">跨年你有空吗？</div>
+        <div class="talk">同事聚餐</div>
+        <div class="timestamp">2017年2月13日 20:32</div>
+        <div class="say">情人节你有空吗？</div>
+        <div class="talk">没空</div>
+        <div class="talk">还有，你送的巧克力好难吃</div>
+        <div class="talk">有股苦杏仁味……我都要吃吐了</div>
+        <div class="talk">请好好反思</div>
+    </div>
+    <div style="text-align: center;margin-top: 10px;background-color: #93c0e0;">
+        <input style="height: 20px; width: 70%;" type="text" id="pageName" placeholder="发送信息请唯小姐过来吧">
+    <button style="margin-top: 10px;padding-top: 0px;padding-bottom: 2px;" onclick="openPage()">发送</button>
+    
+    </div>
+</div>
+
+</div>
+<script>
+    function openPage() {
+        const pageName = document.getElementById('pageName').value;
+        if (pageName.includes("1400万")) {
+            window.open("egg.html", "_blank");
+        }else{
+            window.open("next5.html","_blank");
+        }
+    }
+    </script>
+</body>
+</html>

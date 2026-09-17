@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>试阅与印量调查</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* 避免拖动时选中文字/图片，提升滑动体验 */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #35354c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Noto Sans JP', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            padding: 20px;
+        }
+
+        /* 主卡片容器：占据大半个屏幕的试阅区域 */
+        .comic-preview {
+            width: 100%;
+            max-width: 1100px;
+            background: #1a1a1f;
+            border-radius: 36px;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(0px);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* 试阅头部装饰 */
+        .preview-header {
+            padding: 20px 28px 12px 28px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .preview-header h2 {
+            font-size: 1.4rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #E6D5B8, #C0A86A);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .preview-badge {
+            background: rgba(192, 168, 106, 0.2);
+            backdrop-filter: blur(4px);
+            padding: 5px 12px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            color: #E6D5B8;
+            border: 0.5px solid rgba(192, 168, 106, 0.5);
+        }
+        .preview-badge span {
+            font-weight: 600;
+            color: #f5d98f;
+        }
+
+        /* ========= 滑动核心区域 ========= */
+        .slider-area {
+            position: relative;
+            width: 100%;
+            background: #0c0c10;
+            /* 占据屏幕大部分高度: 视口的65% 但限制最大最小 */
+            min-height: 55vh;
+            height: auto;
+            aspect-ratio: 16 / 11; /* 类似漫画单页比例，舒服宽高 */
+            overflow: hidden;
+            touch-action: pan-y pinch-zoom; /* 禁止水平滚动条，但保留垂直滑动以允许页面滚动？为了更好手势识别，在滑动容器内禁止垂直滚动可能导致页面无法滚动，我们让父级可滚动但图片区锁定水平方向。实际漫画区我们手动控制滑动，所以取消默认手势 */
+            /* 更精确：禁止浏览器水平拖拽及垂直滚动干扰，但为了让页面不卡死，只在容器内拦截 */
+        }
+
+        /* 双图切换舞台 */
+        .stage {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .slide-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            will-change: transform;
+            transition: transform 0.32s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            /* 平滑曲线符合漫画翻页感 */
+            background: #0a0a0e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* 保持比例，类似漫画预览 */
+            display: block;
+            pointer-events: none;  /* 让图片不干扰拖拽事件 */
+            background: #060608;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 占位错误样式 (优雅降级) */
+        .img-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #1f1f2a, #121218);
+            color: #b9a97c;
+            font-weight: 500;
+            gap: 12px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        .img-placeholder svg {
+            opacity: 0.6;
+        }
+
+        /* 指示器区域 (页码 + 圆点) */
+        .preview-footer {
+            padding: 18px 24px 24px 24px;
+            background: rgba(10, 10, 16, 0.7);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .counter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            color: #cbc3aa;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .page-num {
+            font-family: monospace;
+            font-weight: 600;
+            background: #2a2a32;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+        }
+
+        .direction-hint {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .hint-text {
+            font-size: 0.7rem;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+        .arrow-symbol {
+            font-size: 1rem;
+        }
+
+        .dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+            flex-direction: row-reverse;  /* 从右往左排列，最右侧为第1页（封面） */
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #3f3f48;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .dot.active {
+            background: #E6C87A;
+            width: 24px;
+            box-shadow: 0 0 6px rgba(230,200,122,0.5);
+        }
+
+        /* 辅助提示（移动端右划指引） */
+        .swipe-guide {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.7rem;
+            color: #9e8f6e;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            align-items: center;
+        }
+        .swipe-guide span {
+            background: #2c2c34;
+            padding: 2px 12px;
+            border-radius: 30px;
+        }
+
+        /* 印量调查链接样式 */
+        .survey-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .survey-link a {
+            display: inline-block;
+            background: linear-gradient(135deg, #f0d38a);
+            color: #1a1a1f;
+            font-weight: 400;
+            text-decoration: none;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            backdrop-filter: blur(2px);
+        }
+        .survey-link a:hover {
+            background: linear-gradient(135deg, #d6bc7a, #b89a54);
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+        }
+        .survey-link a:active {
+            transform: scale(0.98);
+        }
+
+        /* 禁止页面滚动干扰 - 仅在触摸移动时根据情况阻止 */
+        @media (max-width: 680px) {
+            .comic-preview {
+                border-radius: 24px;
+            }
+            .preview-header h2 {
+                font-size: 1.2rem;
+            }
+            .survey-link a {
+                padding: 8px 20px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* 增加一个光晕效果提升视觉 */
+        .slider-area::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+            border-radius: 0px;
+            z-index: 3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="comic-preview">
+    
+    <div class="preview-header">
+    </div>
+    
+    <!-- 滑动区域 占大半个屏幕 -->
+    <div class="slider-area" id="sliderArea">
+        <div class="stage" id="stage">
+            <!-- 双卡片: card A (当前显示) 和 card B (备用) -->
+            
+            <div class="slide-card" id="cardA"></div>
+            <div class="slide-card" id="cardB"></div>
+        </div>
+    </div>
+
+    <div class="preview-footer">
+        
+        <div class="counter">
+            <div>*阅读顺序从右往左</div>
+            <div class="page-num" id="pageIndicator">第 1 / 8 页</div>
+            <div class="direction-hint">
+            </div>
+        </div>
+        <div class="dots" id="dotsContainer"></div>
+        <div class="swipe-guide">
+        </div>
+        
+        <!-- 印量调查链接 -->
+        <div class="survey-link">
+            <a href="https://v.wjx.cn/vm/wmJkuXm.aspx# " target="_blank" rel="noopener noreferrer">进入印量调查</a>
+        </div>
+    </div>
+</div>
+<script>
+    (function(){
+
+        const TOTAL_IMAGES = 8;
+
+        function getImageUrl(index) {
+            return `${index}.png`;
+        }
+
+        // 生成占位内容 (图片加载失败时显示)
+        function createPlaceholderContent(pageNumber) {
+            const div = document.createElement('div');
+            div.className = 'img-placeholder';
+            const bgGradient = `radial-gradient(circle at 30% 40%, rgba(30,30,45,0.9), rgba(16,16,24,0.95))`;
+            div.style.background = bgGradient;
+            div.style.border = '1px solid rgba(230,200,122,0.3)';
+            div.style.borderRadius = '20px';
+            div.innerHTML = `
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="4" y="4" width="16" height="16" rx="2" stroke="#E6C87A" stroke-width="1.2" stroke-dasharray="3 2"/>
+                    <path d="M8 12L10 14L16 8" stroke="#E6C87A" stroke-width="1.5" stroke-linecap="round"/>
+                    <circle cx="16.5" cy="9.5" r="1.2" fill="#E6C87A" fill-opacity="0.7"/>
+                </svg>
+                <div style="font-size: 2.2rem; font-weight: bold; color: #E6C87A;">${pageNumber}</div>
+            `;
+            return div;
+        }
+
+        // 预加载并设置图片或占位
+        function setSlideContent(slideElement, pageIndex) {
+            // pageIndex 从 0 开始 (0 -> 第一张封面)
+            const pageNumber = pageIndex + 1;
+            const imgUrl = getImageUrl(pageNumber);
+            // 清除现有内容
+            slideElement.innerHTML = '';
+            const img = new Image();
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'contain';
+            img.alt = `漫画第${pageNumber}页`;
+            
+            const timeoutId = setTimeout(() => {
+                // 如果加载超时 5 秒，也转为占位
+                if (img.parentNode) {
+                    const placeholder = createPlaceholderContent(pageNumber);
+                    slideElement.innerHTML = '';
+                    slideElement.appendChild(placeholder);
+                }
+            }, 3000);
+            
+            img.onload = () => {
+                clearTimeout(timeoutId);
+                slideElement.innerHTML = '';
+                slideElement.appendChild(img);
+            };
+            img.onerror = () => {
+                clearTimeout(timeoutId);
+                const placeholder = createPlaceholderContent(pageNumber);
+                slideElement.innerHTML = '';
+                slideElement.appendChild(placeholder);
+            };
+            img.src = imgUrl;
+            // 附加一个后备：如果图片已经缓存但onerror没触发, 保留
+            if (img.complete && img.naturalHeight === 0) {
+                img.onerror();
+            }
+        }
+
+        // ---------- 滑动翻页逻辑 (向右划 = 下一张，图片向右移动) ----------
+        // 核心: 使用双卡片过渡动画实现「向右划时，当前图片向右移出，新图片从左边滑入」
+        // 左划（上一张）时: 当前图片向左移出，新图片从右边滑入
+        
+        let currentIdx = 0;          // 0-indexed, 0 = 封面(第一张)
+        let isAnimating = false;      // 防止动画中重复触发
+        let activeCard = 'A';         // 当前显示在前台的卡片 ('A' 或 'B')
+        
+        // DOM 元素
+        const cardA = document.getElementById('cardA');
+        const cardB = document.getElementById('cardB');
+        const stage = document.getElementById('stage');
+        const pageIndicator = document.getElementById('pageIndicator');
+        const dotsContainer = document.getElementById('dotsContainer');
+        
+        // 初始化两张卡片内容 (都先填充图片, 但只有activeCard可见且无位移)
+        // 辅助函数: 重置所有卡片位置 & 透明度状态 (无transition时)
+        function resetCardPosition(card, xPercent) {
+            card.style.transition = 'none';
+            card.style.transform = `translateX(${xPercent}%)`;
+            // 强制重绘
+            card.offsetHeight;
+        }
+        
+        
+        // 设置卡片可见性和图片内容 (初始化或刷新)
+        function initializeCards() {
+            // 先关闭transition
+            cardA.style.transition = 'none';
+            cardB.style.transition = 'none';
+            cardA.style.transform = 'translateX(0%)';
+            cardB.style.transform = 'translateX(100%)'; // B隐藏在右侧
+            // 填充内容
+            setSlideContent(cardA, currentIdx);
+            // 预加载临近图片内容到备用卡片 (提升体验)
+            if (currentIdx + 1 < TOTAL_IMAGES) {
+                setSlideContent(cardB, currentIdx + 1);
+            } else {
+                // 边界情况随意填充但用不到
+                setSlideContent(cardB, currentIdx);
+                cardB.style.transform = 'translateX(100%)';
+            }
+            activeCard = 'A';
+            // 恢复transition
+            setTimeout(() => {
+                cardA.style.transition = '';
+                cardB.style.transition = '';
+            }, 20);
+            updateUI();
+        }
+        
+        // 更新页码 + 圆点高亮
+        function updateUI() {
+            pageIndicator.innerText = `第 ${currentIdx + 1} / ${TOTAL_IMAGES} 页`;
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, idx) => {
+                if (idx === currentIdx) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+        
+        // 生成圆点导航 (DOM顺序从左到右为第1页到第8页，但CSS flex-direction: row-reverse 使其视觉从右向左排列)
+        function buildDots() {
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < TOTAL_IMAGES; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (i === currentIdx) dot.classList.add('active');
+                dot.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (isAnimating) return;
+                    const targetIndex = i;
+                    if (targetIndex === currentIdx) return;
+                    // 通过方向跳转: 目标更大 = 下一张(右划效果), 更小 = 上一张(左划效果)
+                    if (targetIndex > currentIdx) {
+                        jumpToIndex(targetIndex);
+                    } else if (targetIndex < currentIdx) {
+                        jumpToIndex(targetIndex);
+                    }
+                });
+                dotsContainer.appendChild(dot);
+            }
+        }
+        
+        // 直接跳转到某张图片 (无动画积累 但需要平滑替换卡片内容并重置位置)
+        function jumpToIndex(newIndex) {
+            if (isAnimating) return;
+            if (newIndex === currentIdx) return;
+            isAnimating = true;
+            
+            // 确定方向: 新索引 > 当前 = 向右翻页（新图从左边进入）效果； 反之向左
+            const direction = newIndex > currentIdx ? 'next' : 'prev';
+            // 需要重新配置两张卡片的图片内容，并且让动画表现出连续感
+            // 为了简单优雅，我们重新同步双卡内容并执行一次完整的方向动画到达指定页
+            // 但为了保持状态，手动控制卡片内容后再触发标准翻页动画 (一次完成)
+            // 由于翻页动画只有一步，不能直接跨多页，但这里按方向执行多次会累加动画丑陋。改成无动画重置所有卡片位置+内容后再触发一次标准翻页达到目标
+            // 方案: 先把currentIdx变为目标前一个索引，再用一次标准翻页？太麻烦，更稳健: 直接重建双卡且无动画设置图片内容，再根据方向模拟单次翻页让用户感觉跳转。
+            // 为了体验平滑，直接重置所有卡片位置且无动画刷新图片内容，然后再更新currentIdx并重新同步内容
+            // 这样简单可靠，用户点击圆点瞬间跳转，但没有任何生硬滚动。同时保持翻页手势有效。
+            // 清除过渡，重新布局
+            cardA.style.transition = 'none';
+            cardB.style.transition = 'none';
+            setSlideContent(cardA, newIndex);
+            // 预载相邻页给备用卡
+            let neighborIndex = (newIndex + 1) < TOTAL_IMAGES ? newIndex + 1 : newIndex - 1;
+            if (neighborIndex >= 0 && neighborIndex < TOTAL_IMAGES) {
+                setSlideContent(cardB, neighborIndex);
+            } else {
+                setSlideContent(cardB, newIndex);
+            }
+            // 重置位置: cardA显示在0，cardB隐藏右侧
+            cardA.style.transform = 'translateX(0%)';
+            cardB.style.transform = 'translateX(100%)';
+            activeCard = 'A';
+            currentIdx = newIndex;
+            setTimeout(() => {
+                cardA.style.transition = '';
+                cardB.style.transition = '';
+                isAnimating = false;
+                updateUI();
+                // 预载另外一边可能用到的邻近图片
+                prefetchNeighbors(newIndex);
+            }, 20);
+        }
+        
+        // 预加载邻居
+        function prefetchNeighbors(idx) {
+            const preload = (i) => {
+                if (i >= 0 && i < TOTAL_IMAGES) {
+                    const img = new Image();
+                    img.src = getImageUrl(i+1);
+                }
+            };
+            preload(idx-1);
+            preload(idx+1);
+        }
+        
+        // 翻页: direction 'next' 或者 'prev'
+        // next: 向右滑动 -> 展示下一张 (图片向右移动: 当前卡片右移出，新卡片从左进)
+        // prev: 向左滑动 -> 展示上一张 (当前卡片左移出，新卡片从右进)
+        function performTransition(direction) {
+            if (isAnimating) return false;
+            // 边界判定
+            if (direction === 'next' && currentIdx + 1 >= TOTAL_IMAGES) return false;
+            if (direction === 'prev' && currentIdx - 1 < 0) return false;
+            
+            isAnimating = true;
+            
+            const nextIndex = direction === 'next' ? currentIdx + 1 : currentIdx - 1;
+            // 确定哪个卡片是当前active卡片，哪个是备用
+            const activeElem = activeCard === 'A' ? cardA : cardB;
+            const idleElem = activeCard === 'A' ? cardB : cardA;
+            
+            // 为备用卡片加载新图片 (目标图片)
+            setSlideContent(idleElem, nextIndex);
+            
+            // 重置备用卡片的transform为初始偏移 (依据方向)
+            // 对于 next (下一张): 新卡片应该从左边进入 -> 起始位置 -100%
+            // 对于 prev (上一张): 新卡片从右边进入 -> 起始位置 +100%
+            idleElem.style.transition = 'none';
+            if (direction === 'next') {
+                idleElem.style.transform = 'translateX(-100%)';
+            } else {
+                idleElem.style.transform = 'translateX(100%)';
+            }
+            // 强制重绘
+            idleElem.offsetHeight;
+            idleElem.style.transition = '';
+            
+            // 同时让当前卡片和目标卡片开始动画
+            // 当前卡片移出方向: next -> 向右移出 (+100%); prev -> 向左移出 (-100%)
+            if (direction === 'next') {
+                activeElem.style.transform = 'translateX(100%)';
+                idleElem.style.transform = 'translateX(0%)';
+            } else {
+                activeElem.style.transform = 'translateX(-100%)';
+                idleElem.style.transform = 'translateX(0%)';
+            }
+            
+            // 动画结束后更新状态
+            const onFinish = () => {
+                // 移除事件监听避免重复调用
+                activeElem.removeEventListener('transitionend', onFinish);
+                idleElem.removeEventListener('transitionend', onFinish);
+                
+                // 重置所有卡片位置，让新的active卡片位于0%位置，闲置卡片放到隐藏区（右侧+100%）
+                activeElem.style.transition = 'none';
+                idleElem.style.transition = 'none';
+                // 当前动画结束，新active卡片应该是刚刚移入的 idleElem
+                const newActiveElem = idleElem;
+                const newIdleElem = activeElem;
+                
+                // 把新active位置复位0%
+                newActiveElem.style.transform = 'translateX(0%)';
+                // 闲置卡片放到右侧隐藏(100%)，方便下次使用
+                newIdleElem.style.transform = 'translateX(100%)';
+                
+                // 交换 activeCard 标记
+                activeCard = activeCard === 'A' ? 'B' : 'A';
+                currentIdx = nextIndex;
+                
+                // 恢复过渡
+                setTimeout(() => {
+                    newActiveElem.style.transition = '';
+                    newIdleElem.style.transition = '';
+                    isAnimating = false;
+                    updateUI();
+                    // 预加载更远一张图片提升流畅度
+                    prefetchNeighbors(currentIdx);
+                    // 额外为闲置卡片预载下一个可能图片（提升顺滑）
+                    let nextPossible = (direction === 'next') ? currentIdx + 1 : currentIdx - 1;
+                    if (nextPossible >= 0 && nextPossible < TOTAL_IMAGES) {
+                        // 悄悄预加载到闲置卡片但不影响当前显示 (为了下一次切换更快)
+                        if (newIdleElem) {
+                            setSlideContent(newIdleElem, nextPossible);
+                            newIdleElem.style.transform = 'translateX(100%)';
+                        }
+                    } else {
+                        // 边界时放任意图片
+                        if (newIdleElem) setSlideContent(newIdleElem, currentIdx);
+                    }
+                }, 10);
+            };
+            
+            activeElem.addEventListener('transitionend', onFinish, { once: true });
+            idleElem.addEventListener('transitionend', onFinish, { once: true });
+            // 设置后备超时 (防止 transitionend 未触发)
+            setTimeout(() => {
+                if (isAnimating) {
+                    // 强制结束
+                    activeElem.removeEventListener('transitionend', onFinish);
+                    idleElem.removeEventListener('transitionend', onFinish);
+                    onFinish();
+                }
+            }, 400);
+            return true;
+        }
+        
+        // ---------- 触摸/鼠标滑动事件 (监听sliderArea区域) ----------
+        const sliderArea = document.getElementById('sliderArea');
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let isSwiping = false;
+        let swipeThreshold = 35;      // 滑动最小像素
+        
+        function handleTouchStart(e) {
+            if (isAnimating) return;
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            isSwiping = true;
+            // 阻止页面滚动轻微影响 (不阻止全部滚动，避免无法上下滑动页面；但漫画区主要水平滑动)
+            // 为了不干扰，不做 preventDefault 开始，在move中判断水平滑动再阻止
+        }
+        
+        function handleTouchMove(e) {
+            if (!isSwiping || isAnimating) return;
+            const moveX = e.touches[0].clientX - touchStartX;
+            const moveY = e.touches[0].clientY - touchStartY;
+            // 如果水平移动距离大于垂直，认为是横向滑动，阻止页面滚动
+            if (Math.abs(moveX) > Math.abs(moveY) && Math.abs(moveX) > 10) {
+                e.preventDefault();
+            }
+        }
+        
+        function handleTouchEnd(e) {
+            if (!isSwiping || isAnimating) {
+                isSwiping = false;
+                return;
+            }
+            const endX = e.changedTouches[0].clientX;
+            const deltaX = endX - touchStartX;
+            if (Math.abs(deltaX) > swipeThreshold) {
+                if (deltaX > 0) {
+                    // 向右滑动 -> 下一张
+                    performTransition('next');
+                } else if (deltaX < 0) {
+                    // 向左滑动 -> 上一张
+                    performTransition('prev');
+                }
+            }
+            isSwiping = false;
+        }
+        
+        // 鼠标支持（PC调试）
+        let mouseStartX = 0;
+        let mouseDown = false;
+        function onMouseDown(e) {
+            if (isAnimating) return;
+            mouseDown = true;
+            mouseStartX = e.clientX;
+            e.preventDefault();
+            sliderArea.style.cursor = 'grabbing';
+        }
+        function onMouseMove(e) {
+            if (!mouseDown || isAnimating) return;
+            const deltaX = e.clientX - mouseStartX;
+            if (Math.abs(deltaX) > 15) {
+                e.preventDefault();
+            }
+        }
+        function onMouseUp(e) {
+            if (!mouseDown || isAnimating) {
+                mouseDown = false;
+                sliderArea.style.cursor = '';
+                return;
+            }
+            const deltaX = e.clientX - mouseStartX;
+            if (Math.abs(deltaX) > swipeThreshold) {
+                if (deltaX > 0) performTransition('next');
+                else if (deltaX < 0) performTransition('prev');
+            }
+            mouseDown = false;
+            sliderArea.style.cursor = '';
+        }
+        
+        // 注册事件
+        function bindEvents() {
+            sliderArea.addEventListener('touchstart', handleTouchStart, { passive: false });
+            sliderArea.addEventListener('touchmove', handleTouchMove, { passive: false });
+            sliderArea.addEventListener('touchend', handleTouchEnd);
+            sliderArea.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+            // 防止鼠标离开容器后依然拖拽
+            sliderArea.addEventListener('dragstart', (e) => e.preventDefault());
+        }
+        
+        // 初始化所有组件
+        function init() {
+            buildDots();
+            initializeCards();
+            bindEvents();
+            // 额外预载所有图片 (提升体验)
+            for(let i=1;i<=TOTAL_IMAGES;i++) {
+                const img = new Image();
+                img.src = getImageUrl(i);
+            }
+        }
+        
+        init();
+    })();
+</script>
+</body>
+</html>

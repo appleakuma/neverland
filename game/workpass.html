@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>身份验证</title>
+</head>
+<body style="background-color:#93c0e0">
+    <div style="color: white; font-size: 20px;font-weight: 500;">麦基劳公司-槙原涉 的工作台</div>
+    <div style="margin-top: 35vh;text-align: center;">
+    <input type="text" id="pageName" placeholder="请输入密码">
+    <button onclick="openPage()">确认</button>
+    </div>
+    <script>
+    function openPage() {
+        const pageName = document.getElementById('pageName').value;
+        if (pageName === "19810505") {
+            window.open("work.html", "_self");
+        }else{
+            window.open("workpasswrong.html","_self");
+        }
+    }
+    </script>
+</body>
+</html>

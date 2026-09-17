@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dog</title>
+    <style>
+        /* 让body铺满全屏，没有任何多余元素 */
+        body {
+            background-image: url('image/dog1.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .knife{
+            display: inline-block;
+            height: 100px;
+            width: 100px;
+            background-image: url("image/knife.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+            position: relative;
+
+        }
+        .knife:hover{
+            background-image: url("image/knife_hover.png");
+        }
+        .knife:visited{
+            background-image: url("image/knife_visited.png");
+        }
+        .phone{
+            display: inline-block;
+            height: 100px;
+            width: 100px;
+            background-image: url("image/phone.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+            position: relative;
+
+        }
+        .phone:hover{
+            background-image: url("image/phone_hover.png");
+        }
+        .phnoe:visited{
+            background-image: url("image/phone_visited.png");
+        }
+    </style>
+</head>
+<body>
+
+    <div style="position: relative; top: 50vh;left:50vw"><a href="end1.html" class="knife"></a></div>
+    <div style="position: relative; top: 0px;left:70vw"><a href="next.html" class="phone"></a></div>
+</body>
+</html>

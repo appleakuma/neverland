@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内部聊天室</title>
+    <style>
+    .a{
+        background-color: white;
+        border: 1px solid #ffffff;
+    }
+    .b{
+        height: 50px;
+        padding: 10px;
+        padding-top: 20px;
+        font-size: 18px;
+        color: rgb(61, 61, 61);
+        
+        background-color: #93c0e0;
+    }
+    .b:hover{
+        background-color: #096db0;
+        color: #93c0e0;
+    }
+    .name{
+        color: #443a3a;
+        font-size: 16px;
+        margin: 5px;
+        margin-top: 10px;
+        font-weight: 400;
+    }
+    .talk{
+        color: #ffffff;
+        font-size: 18px;
+        background-color: rgb(61, 61, 61);
+        display: inline-block;
+        max-width: 70vw;
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-bottom: 5px;
+        border-radius: 8px;
+        font-weight: 300;
+        padding: 8px;
+        padding-bottom: 10px;
+        text-align: left;
+    }
+    .say{
+        color: #ffffff;
+        font-size: 18px;
+        display: inline-block;
+        max-width: 35vw;
+        margin-bottom: 5px;
+        border-radius: 8px;
+        font-weight: 300;
+        padding: 8px;
+        padding-bottom: 10px;
+        background-color: #096db0;
+        margin-left: auto;
+        margin-top: 10px;
+        text-align: left;
+    }
+
+    .chat-container {
+        flex: 3;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        height: 95vh; /* 固定高度 */
+        overflow: hidden; /* 隐藏外部滚动 */
+    }
+
+    .message-list {
+        flex: 1;
+        overflow-y: auto; /* 内部垂直滚动 */
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .timestamp {
+        text-align: center;
+        color: #999;
+        font-size: 14px;
+        margin: 15px 0 5px;
+    }
+    </style>
+</head>
+<body style="margin: 0px;background-color: #93c0e0">
+
+<div style="display: flex;
+height: 100vh;
+gap: 0px;
+">
+<div class="a" style="flex:1; display: flex;flex-direction: column;">
+    <div style="margin: 10px;font-size: 20px;font-weight: 500;">工作台</div><br><br>
+    <a href="arrange.html" style="text-decoration: none;"><div class="b" style="flex: 1; ">重大项目管理</div></a>
+    <a  style="text-decoration: none;"><div class="b" style="flex: 1; background-color: #096db0;color: #93c0e0;">内部聊天室</div></a>
+    <a href="worker.html" style="text-decoration: none;"><div class="b" style="flex: 1; ">旗下职员管理</div></a>
+    <a href="date.html" style="text-decoration: none;"><div class="b" style="flex: 1; ">会议与日程</div></a>
+    <br><br><br><br><br><br>
+    <a href="search.html" style="text-decoration: none;"><div class="b" style="flex: 1; background-color: #ffffff;color: #096db0;">返回</div></a>
+    
+</div>
+
+<div class="a" style="flex:1; display: flex;flex-direction: column;">
+    <div style="margin: 10px;font-size: 20px;font-weight: 500;">内部聊天室</div><br><br>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;background-color: #096db0;color: #93c0e0;">古川 铁平</div></a>
+    <a href="workchat2.html" style="text-decoration: none;"><div class="b" style="flex: 1;">鸟沢 唯</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;">久保谷 瞠</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;">小鸟游 纺</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;">Nero·Turner</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;">都志见 文太</div></a>
+    <a style="text-decoration: none;"><div class="b" style="flex: 1;">铃村 飒太</div></a>
+</div>
+
+<div class="chat-container">
+    <div style="margin: 10px;font-size: 20px;font-weight: 500; padding-bottom: 10px; ">古川 铁平</div>
+    <div class="message-list">
+        <div class="timestamp">2016年1月7日 9:15</div>
+        <div class="say">欢迎入职！古川君！</div>
+        <div class="say">啊不要被我的热情吓到哦～</div>
+        <div class="say">很高兴可以成为你的前辈，有什么不懂的都可以问我哦^ ^</div>
+        <div class="say">谢谢你今天帮我打了欺负我的上司一拳…</div>
+        <div class="say">虽然这样不太好啦</div>
+        <div class="say">下次不要这样哦！</div>
+        <div class="say">为了报答你这份恩情，我晚上请你喝酒吧！</div>
+        <div class="say">地址在西斯塔市卡亚街xx号</div>
+        <div class="say">一定要来哦！</div>
+        
+        <div class="timestamp">2016年1月8日 7:46</div>
+        <div class="say">不知道为什么你昨天没有来……我在酒吧等了你好久哦……</div>
+        <div class="say">不过没有关系，毕竟古川君是一个大有作为的好青年！所以会很忙的嘛…</div>
+        <div class="say">有需要帮助的一定要说哦！毕竟我是你的前辈嘛～</div>
+        
+        <div class="timestamp">2016年1月10日 18:11</div>
+        <div class="say">之前的那个上司终于离职啦，没想到我会被提拔，这可是我人生里不多得的时候啊……</div>
+        <div class="say">毕竟我在做前一个职业的时候，总是觉得自己没能做好……</div>
+        <div class="say">我以前也认识一个跟你同名同姓的人哦</div>
+        <div class="say">看到你认真的样子，我总是会想起他。</div>
+        <div class="say">如果现在他还在世的话，一定已经考上好大学并且实现理想了吧</div>
+        <div class="say">不过古川君你不一样哦，我不希望你误会。你就是你</div>
+        <div class="say">没有你的话，我都不知道这样的日子该怎么过下去……毕竟只剩下我一个人……</div>
+        <div class="say">啊今天酒喝多了话有点多抱歉！</div>
+
+        <div class="timestamp">2016年2月12日 17:25</div>
+        <div class="say">从后辈那边听说了你一直在暗暗帮助我的事情</div>
+        <div class="say">好惭愧啊，明明我才是前辈…</div>
+        <div class="say">我又晋升了，这都是多亏了你的缘故！</div>
+        <div class="say">晚上喝酒一定要来哦！</div>
+        
+        <div class="timestamp">2016年2月14日 18:05</div>
+        <div class="say">最近老是有人说我喜欢自言自语什么的，还问我是不是交到了女朋友所以开心到头脑不清晰了</div>
+        <div class="say">明明她才不是那么容易妥协的人啦！</div>
+        <div class="say">今天也是情人节哦，古川君，给你的巧克力要收下！</div>
+        <div class="say">（啊不好意思因为跟我学生很像，不自觉就用这种语气说话了）</div>
+        
+        <div class="timestamp">2016年2月14日 22:34</div>
+        <div class="say">古川君？为什么你总是不回我消息呀，巧克力要化了……</div>
+        <div class="say">啊，或许你不想回我消息吗？</div>
+        <div class="say">前辈说你最近好像状态很不好，好像连身影都变得像风一样了……</div>
+        <div class="say">或许你是不想让人打扰你吗？</div>
+        <div class="say">这样也好……能一个人静静的话</div>
+
+        <div class="timestamp">2016年10月2日 20:53</div>
+        <div class="say">古川君，我今天终于当上麦基劳公司的总裁了！</div>
+        <div class="say">听说我之前认识的一个人，是久保谷君哦</div>
+        <div class="say">你虽然不认识，但是我也很喜欢他</div>
+        <div class="say">不想看到他流离失所的样子，所以把他招进来做外卖员了</div>
+        <div class="say">看到他上班上得很开心的样子，我也很开心</div>
+        <div class="say">你最近过得还好吗？</div>
+        <div class="say">听说你辞职以后就消失不见了，你到底在哪里呀？</div>
+
+        <div class="timestamp">2016年12月31日 23:20</div>
+        <div class="say">老师很爱你哦，快点回家吧</div>
+        <div class="say">我的伤疤在隐隐作痛，即使这样也不来见我吗……</div>
+        <div class="timestamp">2017年2月14日 6:03</div>
+        <div class="say">古川君，今天，我看到了。是贤太郎哦，贤太郎。</div>
+        <div class="say">他说他要写报道，如果没有那个报道的话，你就不会离开我了吧……</div>
+        <div class="say">录音笔……</div>
+        <div class="say">他吞下了，录音笔</div>
+        <div class="say">我看到了</div>
+        <div class="say">我都看到了…</div>
+        <div class="say">你们到底为什么一个个都离我而去？让我独自承担着这样的孤独</div>
+        <div class="say">再来一次的话，我绝不对不会让你受伤的</div>
+        <div class="say">我现在就要去他家，解决这件事情……</div>
+        <div class="say">导航……他家……门牌号是多少来着？</div>
+        <div class="say">老师，这个在《图书室的Neversista》的“船”章节里好像有写到哦</div>
+        <div class="say">对哦，年轻人就是记性好啊</div>
+        <div class="say">真是太感谢你了，古川君…</div>
+        <div class="say">请放心交给我吧</div>
+    </div>
+    <div style="text-align: center;margin-top: 10px;background-color: #93c0e0;">
+        <input style="height: 20px; width: 70%;" type="text" id="pageName" placeholder="输入聊天内容">
+    <button style="margin-top: 10px;padding-top: 0px;padding-bottom: 2px;" onclick="openPage()">发送</button>
+    </div>
+</div>
+
+</div>
+</body>
+</html>

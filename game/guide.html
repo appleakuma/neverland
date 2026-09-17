@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>门牌号是2-32-201哦~</title>
+    <style>
+    body {
+        background-image: url('image/guide.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+    </style>
+</head>
+<body>
+    <div style="margin-top: 15vh;text-align: center;">
+    <input type="text" id="pageName" placeholder="要去找那个人……">
+    <button onclick="openPage()">导航</button>
+    </div>
+    <script>
+    function openPage() {
+        const pageName = document.getElementById('pageName').value;
+        if (pageName === "2-32-201") {
+            window.open("drive.html", "_blank");
+        }
+    }
+    </script>
+    <div style="position: relative;left: 47vw;top: 70vh;"><a style="text-decoration: none;color: antiquewhite;" href="computer1.html">返回</a></div>
+</body>
+</html>
