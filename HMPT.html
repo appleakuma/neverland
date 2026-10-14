@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HMPT Online 网站解析总览</title>
+<style>
+  :root{
+    --ink:#1a1d23; --ink2:#454b57; --ink3:#7b8494;
+    --line:#e3e7ee; --bg:#ffffff; --soft:#f6f8fb; --soft2:#fbfcfe;
+    --blue:#2c6fd1; --blue-soft:#eaf2fd;
+    --green:#178a5a; --green-soft:#e8f6ef;
+    --amber:#b8761a; --amber-soft:#fdf3e3;
+    --red:#c0392b; --red-soft:#fdecea;
+    --purple:#6b4bc4; --purple-soft:#f1ecfd;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:40px 24px 80px; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:14.5px; line-height:1.75; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:900px;margin:0 auto}
+
+  header{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:32px}
+  .eyebrow{font-size:12px;letter-spacing:.14em;color:var(--ink3);text-transform:uppercase;font-weight:600}
+  h1{font-size:27px;margin:8px 0 6px;letter-spacing:-.01em;font-weight:700}
+  .sub{color:var(--ink2);font-size:14px}
+  .meta{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:12px;padding:3px 10px;border-radius:100px;background:var(--soft);color:var(--ink2);border:1px solid var(--line)}
+  .tag.b{background:var(--blue-soft);color:var(--blue);border-color:#cfe1f8}
+  .tag.g{background:var(--green-soft);color:var(--green);border-color:#c8e8d8}
+  .tag.a{background:var(--amber-soft);color:var(--amber);border-color:#f2ddb8}
+  .tag.r{background:var(--red-soft);color:var(--red);border-color:#f6cfca}
+
+  h2{font-size:18px;margin:44px 0 14px;padding-left:12px;border-left:4px solid var(--ink);font-weight:700}
+  h3{font-size:15px;margin:26px 0 8px;color:var(--ink);font-weight:650}
+  p{margin:9px 0}
+  ul,ol{margin:9px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-size:12.8px;
+       background:var(--soft);padding:1.5px 5px;border-radius:4px;color:#0f4c81}
+  pre{background:var(--soft2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;
+      overflow-x:auto;font-family:"SFMono-Regular",Consolas,monospace;font-size:12.6px;line-height:1.65;color:var(--ink2)}
+  pre code{background:none;padding:0;color:inherit}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--soft);font-weight:650;font-size:12.5px;color:var(--ink2);letter-spacing:.02em}
+  tbody tr:hover{background:var(--soft2)}
+  td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  .card{background:var(--soft2);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:14px 0}
+  .card.warn{background:var(--amber-soft);border-color:#f2ddb8}
+  .card.bad{background:var(--red-soft);border-color:#f6cfca}
+  .card.good{background:var(--green-soft);border-color:#c8e8d8}
+  .card h4{margin:0 0 8px;font-size:14px;font-weight:680}
+  .card p:last-child,.card ul:last-child{margin-bottom:0}
+
+  .flow{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+  .step{flex:1 1 150px;background:var(--soft2);border:1px solid var(--line);border-radius:10px;padding:12px 13px;position:relative}
+  .step .n{font-size:11px;font-weight:700;color:var(--blue);letter-spacing:.08em}
+  .step .t{font-weight:650;font-size:13.5px;margin:3px 0 4px}
+  .step .d{font-size:12.3px;color:var(--ink3);line-height:1.55}
+
+  .kpi{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+  .kpi div{flex:1 1 130px;background:var(--soft);border-radius:10px;padding:12px 14px}
+  .kpi .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+  .kpi .l{font-size:11.8px;color:var(--ink3);margin-top:2px}
+
+  .ok{color:var(--green);font-weight:650}
+  .no{color:var(--red);font-weight:650}
+  .half{color:var(--amber);font-weight:650}
+
+  .foot{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);font-size:12.3px;color:var(--ink3)}
+  @media print{body{padding:0;font-size:11.5pt}h2{page-break-after:avoid}.card,.step,table{page-break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Front-end Reverse-engineering Digest</div>
+  <h1>HMPT Online 网站解析总览</h1>
+  <div class="sub">对 <code>https://online.hmpt.braimpact.com/</code> 的完整拆解 —— 输入契约、推理管线、可复用资产与移动端迁移边界</div>
+  <div class="meta">
+    <span class="tag b">React + Vite SPA</span>
+    <span class="tag b">ONNX Runtime Web</span>
+    <span class="tag g">纯前端 · 无后端 API</span>
+    <span class="tag">分析日期 2026-10-12</span>
+    <span class="tag">整理 2026-10-14</span>
+  </div>
+</header>
+
+<h2>一、一句话定位</h2>
+<div class="card">
+  <p>一个<b>完全在浏览器本地运行</b>的脑损伤风险评估工具：输入头部受撞击时的 9 通道运动学时序，用 Transformer 编解码器预测脑组织各处的<b>最大主应变（MPS）</b>，输出逐毫秒的 P95/Max 曲线与 512 个脑区簇的应变场，并配一个约 95 万点的 3D 脑模型做彩虹色可视化。</p>
+</div>
+<div class="kpi">
+  <div><div class="v">9</div><div class="l">输入通道</div></div>
+  <div><div class="v">1 ms</div><div class="l">时间网格步长</div></div>
+  <div><div class="v">1–200</div><div class="l">窗口长度（ms）</div></div>
+  <div><div class="v">512</div><div class="l">输出脑区簇</div></div>
+  <div><div class="v">64 MB</div><div class="l">两个 ONNX 模型</div></div>
+  <div><div class="v">0</div><div class="l">后端 API 数</div></div>
+</div>
+
+<h2>二、输入契约</h2>
+<table>
+  <thead><tr><th style="width:22%">项目</th><th>规格</th></tr></thead>
+  <tbody>
+    <tr><td>文件格式</td><td>CSV 或 HDF5（页面直接读本地文件）</td></tr>
+    <tr><td>数据形状</td><td>CSV <code>[T, 9]</code>；HDF5 为三个数据集 <code>kinematics/angvel</code>、<code>kinematics/angacc</code>、<code>kinematics/linacc</code>，各 <code>[T, 3]</code></td></tr>
+    <tr><td>时间分辨率</td><td><b>1 行 = 1 毫秒</b>（等效 1000 Hz，是输入契约而非传感器原生采样率）</td></tr>
+    <tr><td>窗口长度</td><td>T ∈ [1, 200]，超限直接抛错。<code>seq_len</code> 是动态轴，<b>不需要补齐到 200</b></td></tr>
+    <tr><td>CSV 表头</td><td>硬性要求，前 9 列必须正好是那 9 个名字（顺序可变、不能重复、不能为空、必须能解析为 Float32）</td></tr>
+    <tr><td>无需登录</td><td>无用户系统、无上传、无网络请求</td></tr>
+  </tbody>
+</table>
+
+<h3>九个通道与单位</h3>
+<table>
+  <thead><tr><th>#</th><th>列名</th><th>物理量</th><th>单位</th><th>归一化 std（实测）</th></tr></thead>
+  <tbody>
+    <tr><td class="num">0</td><td><code>ang_vel_x</code></td><td rowspan="3">角速度</td><td rowspan="3">rad/s</td><td class="num">11.34</td></tr>
+    <tr><td class="num">1</td><td><code>ang_vel_y</code></td><td class="num">13.79</td></tr>
+    <tr><td class="num">2</td><td><code>ang_vel_z</code></td><td class="num">13.65</td></tr>
+    <tr><td class="num">3</td><td><code>ang_acc_x</code></td><td rowspan="3">角加速度</td><td rowspan="3">rad/s²</td><td class="num"><b>977.18</b></td></tr>
+    <tr><td class="num">4</td><td><code>ang_acc_y</code></td><td class="num"><b>1209.97</b></td></tr>
+    <tr><td class="num">5</td><td><code>ang_acc_z</code></td><td class="num"><b>963.22</b></td></tr>
+    <tr><td class="num">6</td><td><code>lin_acc_x</code></td><td rowspan="3">线加速度</td><td rowspan="3">m/s²</td><td class="num">11.51</td></tr>
+    <tr><td class="num">7</td><td><code>lin_acc_y</code></td><td class="num">10.39</td></tr>
+    <tr><td class="num">8</td><td><code>lin_acc_z</code></td><td class="num">7.30</td></tr>
+  </tbody>
+</table>
+<div class="card good">
+  <h4>单位自检法（免费送的）</h4>
+  <p>角加速度通道的标准差约 <b>1000</b>。如果你误把 <code>deg/s²</code> 喂进去，归一化后的 z 值会整体放大约 <b>57 倍</b>，表现为输入分布严重离群（|z| 普遍 &gt; 10）。采完数据先看 z 值分布，比事后怀疑结果靠谱得多。</p>
+</div>
+
+<h2>三、完整推理管线</h2>
+<div class="flow">
+  <div class="step"><div class="n">STEP 0</div><div class="t">输入校验</div><div class="d">T ∈ [1,200]；buffer 长度必须 = T×9×4 字节</div></div>
+  <div class="step"><div class="n">STEP 1</div><div class="t">z-score 标准化</div><div class="d">逐通道 <code>(x−mean)/std</code>，9 个常数写死在静态文件里</div></div>
+  <div class="step"><div class="n">STEP 2</div><div class="t">编码器 ×1</div><div class="d">整段 [T,9] → <code>memory [T,512]</code>，之后固定不变</div></div>
+  <div class="step"><div class="n">STEP 3</div><div class="t">解码器 ×T</div><div class="d">自回归逐毫秒生成，无 KV cache，200 ms 就是 200 次串行前向</div></div>
+  <div class="step"><div class="n">STEP 4</div><div class="t">后处理</div><div class="d">反归一化 → expm1 → 截断负值 → 加权分位数</div></div>
+</div>
+
+<h3>解码器究竟怎么跑（这是性能核心）</h3>
+<ol>
+  <li><b>起始 token 是全零向量</b>，不是学出来的 BOS embedding。</li>
+  <li>每步把<b>当前完整前缀</b>重新喂入：<code>[BOS]</code> → <code>[BOS, y₁]</code> → <code>[BOS, y₁, y₂]</code> …</li>
+  <li>ONNX 图层面确认输入 <code>tgt_input</code> 形状为 <code>[batch, tgt_len, 512]</code>、输出恒为 <code>[batch, 1, 512]</code>——<b>每次调用只产出一个时间步</b>。</li>
+  <li>图里有一个 <code>Trilu</code> 算子，说明自注意力带因果掩码（第 t 步只能看到 ≤ t 的历史）。</li>
+  <li>没有 KV cache，第 t 步要重算整个前缀，总计算量约 <b>O(T²)</b>。</li>
+  <li>关键细节：<b>运动学只通过 <code>memory</code> 影响解码</b>，解码器自己看不到 9 通道原始数据。</li>
+</ol>
+
+<h3>后处理三步（最容易漏、且漏了不报错）</h3>
+<pre><code>// 1. 反归一化   2. expm1   3. 截断到非负
+const v = Math.max(0, Math.expm1(y[t*512 + e] * stdY[e] + meanY[e]));</code></pre>
+<div class="card warn">
+  <h4>三个坑</h4>
+  <ul>
+    <li>模型预测的是 <code>log1p(MPS)</code> 再做 z-score，反变换必须是 <code>exp(x)−1</code>，且<b>顺序是先反归一化再 expm1</b>。</li>
+    <li><code>Math.max(0, …)</code> 的截断会改变分位数结果，不能省。</li>
+    <li><b>P95 不是普通百分位</b>，而是按网格单元数加权的分位数：权重来自 <code>belong2.u16</code>（118,840 个单元映射到 512 簇），比较时用 <code>Math.ceil(q × total)</code> 累计权重。直接对 512 个簇值取第 95 百分位会得到不同的数。</li>
+  </ul>
+</div>
+
+<h3>两个模型的计算图签名（直接解析 .onnx 得到）</h3>
+<table>
+  <thead><tr><th>模型</th><th>角色</th><th>名称</th><th>类型</th><th>形状</th></tr></thead>
+  <tbody>
+    <tr><td rowspan="3">encoder.onnx<br><span style="color:var(--ink3);font-size:12px">172 节点</span></td><td>输入</td><td><code>src_input</code></td><td>float32</td><td class="num">[batch, seq_len, 9]</td></tr>
+    <tr><td>输入</td><td><code>pad_input</code></td><td>bool</td><td class="num">[batch, seq_len]</td></tr>
+    <tr><td>输出</td><td><code>memory</code></td><td>float32</td><td class="num">[batch, seq_len, 512]</td></tr>
+    <tr><td rowspan="5">decoder.onnx<br><span style="color:var(--ink3);font-size:12px">336 节点</span></td><td>输入</td><td><code>memory</code></td><td>float32</td><td class="num">[batch, seq_len, 512]</td></tr>
+    <tr><td>输入</td><td><code>tgt_input</code></td><td>float32</td><td class="num">[batch, tgt_len, 512]</td></tr>
+    <tr><td>输入</td><td><code>memory_pad</code></td><td>bool</td><td class="num">[batch, seq_len]</td></tr>
+    <tr><td>输入</td><td><code>tgt_pad</code></td><td>bool</td><td class="num">[batch, tgt_len]</td></tr>
+    <tr><td>输出</td><td><code>output</code></td><td>float32</td><td class="num"><b>[batch, 1, 512]</b></td></tr>
+  </tbody>
+</table>
+<p style="font-size:13px;color:var(--ink2)">两个模型均为 PyTorch 2.13.0 导出（ONNX IR version 10），内部命名 <code>Trm4a0ONNXEncoder</code> / <code>Trm4a0ONNXDecoder</code>，含时间步编码与交叉注意力。</p>
+
+<h2>四、输出</h2>
+<table>
+  <thead><tr><th style="width:26%">输出项</th><th>内容</th></tr></thead>
+  <tbody>
+    <tr><td><code>clusterMps</code></td><td>每个毫秒 × 512 个脑区簇的 MPS 应变值</td></tr>
+    <tr><td><code>p95Curve</code></td><td>逐毫秒的加权 P95 MPS（默认主曲线）</td></tr>
+    <tr><td><code>maxCurve</code></td><td>逐毫秒的最大 MPS</td></tr>
+    <tr><td>指标表</td><td>每个案例的时长(ms)、Peak P95 MPS、MAX MPS、计算状态</td></tr>
+    <tr><td>3D 脑模型</td><td>vtk.js 渲染，950,720 点 / 713,040 面，按 MPS 彩虹色着色，可旋转</td></tr>
+    <tr><td>导出</td><td>指标 CSV，或完整 HDF5（运动学 + MPS 场）</td></tr>
+    <tr><td>运行时元信息</td><td><code>backend</code>（webgpu/wasm）、<code>wasmThreads</code>、<code>timings</code> 五个阶段耗时</td></tr>
+  </tbody>
+</table>
+
+<h2>五、可直接下载的资产（迁移的核心）</h2>
+<table>
+  <thead><tr><th>资源</th><th>路径</th><th>大小</th><th>用途</th></tr></thead>
+  <tbody>
+    <tr><td>编码器</td><td><code>models/encoder.onnx</code></td><td class="num">24.8 MB</td><td>运动学 → 隐表示</td></tr>
+    <tr><td>解码器</td><td><code>models/decoder.onnx</code></td><td class="num">39.0 MB</td><td>隐表示 → 逐毫秒 MPS</td></tr>
+    <tr><td>资源清单</td><td><code>visual-assets/manifest.json</code></td><td class="num">2.2 KB</td><td>索引</td></tr>
+    <tr><td>输入归一化</td><td><code>visual-assets/mean-x.f32</code> / <code>std-x.f32</code></td><td class="num">36 B 各</td><td>9 通道常数</td></tr>
+    <tr><td>输出归一化</td><td><code>visual-assets/mean-y.f32</code> / <code>std-y.f32</code></td><td class="num">2 KB 各</td><td>512 簇常数</td></tr>
+    <tr><td>簇归属</td><td><code>visual-assets/belong2.u16</code></td><td class="num">238 KB</td><td>118,840 单元 → 512 簇，算加权分位数</td></tr>
+    <tr><td>三维网格</td><td><code>visual-assets/points.f32</code> / <code>polys.u32</code></td><td class="num">11 MB / 14 MB</td><td>脑模型几何</td></tr>
+    <tr><td>色表</td><td><code>visual-assets/rainbow.rgba.bin</code></td><td class="num">1 KB</td><td>MPS 伪彩映射</td></tr>
+    <tr><td>推理 Worker</td><td><code>assets/inference.worker-*.js</code></td><td class="num">5.8 KB</td><td><b>预处理/推理/后处理的唯一事实来源</b></td></tr>
+  </tbody>
+</table>
+<div class="card">
+  <p>全部资产合计约 <b>90 MB</b>，可整体离线打包进 App。推理 Worker 是<b>自包含模块</b>——除三个 URL 外不依赖页面任何状态，它的接口就是一个干净的消息协议：</p>
+<pre><code>worker.postMessage({ kind:'prepare', urls:{encoder, decoder, manifest} });
+worker.postMessage({ kind:'run', requestId, sampleCount, input: f32.buffer }, [buffer]);
+// 回：{ kind:'result', clusterMps, p95Curve, maxCurve, backend, wasmThreads, timings }</code></pre>
+  <p>还会推送 <code>progress</code> 事件（<code>stage</code> + <code>fraction</code>，阶段为 resources → models → encoder → decoder → visualization），App 的加载进度条可以直接接上。</p>
+</div>
+
+<h2>六、迁移边界：这六个问题，网站能回答几个</h2>
+<table>
+  <thead><tr><th style="width:5%">#</th><th style="width:26%">问题</th><th style="width:16%">能否得知</th><th>结论</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>传感器型号</td><td><span class="no">❌ 不能</span></td><td>网站不接触任何传感器</td></tr>
+    <tr><td>2</td><td>采样率是否 1 ms</td><td><span class="half">⚠️ 只规定输入网格</span></td><td>必须 1 行 = 1 ms；传感器原生率自由，重采样归你</td></tr>
+    <tr><td>3</td><td>蓝牙通信协议</td><td><span class="no">❌ 完全不能</span></td><td>全站零 BLE / GATT 代码</td></tr>
+    <tr><td>4</td><td>九通道顺序与单位</td><td><span class="ok">✅ 完全定义</span></td><td>见第二节，规格明确</td></tr>
+    <tr><td>5</td><td>撞击时刻判断方式</td><td><span class="no">❌ 不能</span></td><td>无触发、无阈值；网站只接受"已经切好的窗口"</td></tr>
+    <tr><td>6</td><td>截取窗口前后时长</td><td><span class="half">⚠️ 只规定总长上限</span></td><td>≤ 200 ms 是硬约束，前后如何分配完全自由</td></tr>
+  </tbody>
+</table>
+<p style="font-size:13px;color:var(--ink2)">判定依据可复现：对主包与 Worker 全文检索 <code>bluetooth</code> / <code>gatt</code> / <code>serial</code> / <code>sensor</code> / <code>trigger</code> / <code>threshold</code> / <code>impact</code> 命中数均为 <b>0</b>（个别命中是 <code>enable</code>、<code>table</code>、<code>window</code> 的子串误报）。</p>
+
+<div class="card bad">
+  <h4>附带查出一件事：网站自带的"Download example"是假的参考数据</h4>
+  <p>那两个按钮是<b>在浏览器里现场合成文件</b>，站点上根本没有样例数据集（直接请求 URL 返回 404，HDF5 由 WASM 即时写出）。硬编码的示例只有 <b>3 毫秒、27 个数</b>，其中 <code>lin_acc_z ≈ 9.81</code>（就是重力），角速度才 0.1 rad/s——<b>完全不是撞击数据</b>。</p>
+  <p>所以：可以用来测<b>链路连通性</b>（返回的 <code>sampleCount</code> 应为 3），但<b>千万别拿它做精度验证</b>。</p>
+</div>
+
+<h2>七、工程上最容易踩的四个点</h2>
+<ol>
+  <li><b>多线程 WASM 需要 <code>crossOriginIsolated</code></b>——它要求页面处于安全上下文且服务端返回 <code>COOP: same-origin</code> + <code>COEP: require-corp</code>。App 里若用 <code>file://</code> / <code>asset://</code> 直接加载本地资源，通常拿不到该标志 → <b>线程数被锁为 1</b>。而解码器是 200 次串行前向，单线程必卡。解法：App 内起本地 HTTP 服务，或让 WebView 拦截请求补上这两个响应头。</li>
+  <li><b>安卓 WebView / 鸿蒙 ArkWeb 通常拿不到 WebGPU</b>，会回退到 WASM。回退本身改变数值路径，所以对比实验里必须记录 <code>backend</code> 字段。</li>
+  <li><b>浮点差异是存在的，但不是 bug</b>——桌面/移动 WebGPU、桌面 WASM、ARM NEON、部分设备 FP16 加速，结果会有 1e-6 ~ 1e-3 量级的相对差异。必须量化，不能默认"应该一样"。</li>
+  <li><b>窗口起点偏移会改变整条 MPS 曲线</b>（因为是整段自回归生成），但"撞击点落在窗口内哪个位置"这个训练约定<b>无法从静态资源推断</b>，是当前风险最高的未知项。</li>
+</ol>
+
+<h2>八、待确认项（必须问老师）</h2>
+<table>
+  <thead><tr><th style="width:8%">优先级</th><th>事项</th></tr></thead>
+  <tbody>
+    <tr><td><span class="tag r">最高</span></td><td><b>窗口对齐约定</b>：撞击时刻在窗口内的相对位置。建议做敏感性实验——同一段数据把窗口起点平移 −20/−10/0/+10/+20 ms 各跑一次，看 Peak P95 与峰值时刻的变化幅度。</td></tr>
+    <tr><td><span class="tag r">最高</span></td><td><b>传感器佩戴朝向与模型的头部解剖坐标系对齐关系</b>。对不齐 XYZ 就错位，结果直接是错的。</td></tr>
+    <tr><td><span class="tag a">中</span></td><td>训练时是否对输入做过滤波（如低通）。若无从得知，手机端<b>不要额外加滤波</b>，与网站输入保持同一处理。</td></tr>
+    <tr><td><span class="tag a">中</span></td><td>传感器的 BLE 服务/特征 UUID、最大包率、直出字段与单位（deg/s 还是 rad/s、g 还是 m/s²）、数据交付方式（BLE 通知还是厂家 SDK）。</td></tr>
+    <tr><td><span class="tag">低</span></td><td>模型训练数据来源、样本量、是否含儿童/成人差异（若开题需说明模型可信度）。</td></tr>
+  </tbody>
+</table>
+
+<h2>九、证据链（可复现）</h2>
+<table>
+  <thead><tr><th>证据</th><th>文件</th></tr></thead>
+  <tbody>
+    <tr><td>推理管线唯一事实来源</td><td><code>hmpt_spec/inference.worker.js</code>（另附格式化版 <code>worker_pretty.txt</code>）</td></tr>
+    <tr><td>模型格式与来源</td><td><code>onnx_probe_result.txt</code>（二进制头解析，确认 producer = pytorch 2.13.0）</td></tr>
+    <tr><td>计算图签名与算子分布</td><td><code>onnx_graph_spec.txt</code></td></tr>
+    <tr><td>能力边界判定</td><td><code>capability_scan.txt</code>（蓝牙/触发关键字命中统计）</td></tr>
+    <tr><td>归一化常数</td><td><code>hmpt_spec/*.json</code> + 逐字节原始 <code>*.f32</code></td></tr>
+    <tr><td>复核方式</td><td>浏览器开发者工具分析前端资源、直接下载并解析模型文件元数据与计算图</td></tr>
+  </tbody>
+</table>
+
+<div class="foot">
+  <p>本总览由 <code>hmpt_spec/HMPT_pipeline_spec.md</code>（完整技术规格）提炼而成，全部结论均来自对前端静态资源、推理 Worker 源码与 ONNX 模型文件的直接解析，非推测。</p>
+</div>
+
+</div>
+</body>
+</html>
